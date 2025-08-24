@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام سنام الأمن</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Tajawal', sans-serif;
+      background: url('aa.png') no-repeat center center fixed;
+      background-size: cover;
+      direction: rtl;
+      text-align: right;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+      background-color: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      padding: 35px 30px;
+      box-sizing: border-box;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    header img {
+      max-height: 60px;
+      margin-bottom: 10px;
+    }
+
+    header h1 {
+      font-size: 24px;
+      color: #3A2D28;
+      margin: 0;
+      font-weight: bold;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    label {
+      font-weight: 600;
+      color: #3A2D28;
+      font-size: 15px;
+    }
+
+    select {
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid #D1C7BD;
+      background-color: #F1EDE6;
+      font-size: 15px;
+      font-family: 'Tajawal', sans-serif;
+      transition: 0.3s;
+    }
+
+    select:focus {
+      border-color: #AA8374;
+      background-color: #fff;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(203, 173, 141, 0.2);
+    }
+
+    .btn {
+      padding: 16px;
+      font-size: 17px;
+      font-weight: bold;
+      border: none;
+      
+      border-radius: 12px;
+      background-color: #948979;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-family: 'Tajawal', sans-serif;
+    }
+
+    .btn:hover {
+      background-color: #AA8374;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 25px 20px;
+      }
+
+      header h1 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <img src="logo_sanam.png" alt="شعار سنام الأمن">
+      <h1>نظام ادارة التقارير</h1>
+    </header>
+
+    <form>
+      <!-- اختيار العميل -->
+      <label for="client">اختيار العميل:</label>
+      <select id="client">
+        <option value="">-- اختر العميل --</option>
+        <option value="rajhireports.html">برج تلال تاورز (شركة سليمان الراجحي العقارية)</option>
+        <option value="alrifadahreports.html">مقرات عرفة (شركة الرفادة لخدمات الحجاج)</option>
+      </select>
+
+      <!-- اختيار نوع التقرير -->
+      <label for="reportType">نوع التقرير:</label>
+      <select id="reportType">
+       <option value="all">الكل</option>
+          <option value="cases">تقرير الحالات الأمنية</option>
+          <option value="attendance">تقرير الحضور والانصراف</option>
+      </select>
+
+      <!-- زر عرض التقرير -->
+      <button type="button" class="btn" id="showReportBtn">
+        عرض التقرير
+      </button>
+    </form>
+  </div>
+
+  <script>
+    // خريطة التوجيه: لكل صفحة عميل نحدد روابط الحالات/الحضور/الكل
+    const ROUTES = {
+      'rajhireports.html': {
+        all: 'rajhi_full/rajhireports.html',
+        cases: 'halat/halat_reports.html',
+        attendance: 'attn/attn_reports.html'
+      },
+      'alrifadahreports.html': {
+        all: 'alrifadahreports.html',
+        cases: 'alrifadahreports.html',
+        attendance: 'alrifadahreports.html'
+      }
+    };
+
+    const clientSel = document.getElementById('client');
+    const reportTypeWrap = document.getElementById('reportTypeWrap');
+    const reportTypeSel = document.getElementById('reportType');
+    const showBtn = document.getElementById('showReportBtn');
+
+    // عند اختيار العميل، أظهر قائمة نوع التقرير
+    clientSel.addEventListener('change', () => {
+      if (clientSel.value) {
+        reportTypeWrap.classList.remove('hidden');
+        // إعادة الضبط لاختيار "الكل" كافتراضي
+        reportTypeSel.value = 'all';
+      } else {
+        reportTypeWrap.classList.add('hidden');
+      }
+    });
+
+    // زر عرض التقرير: وجّه حسب العميل + نوع التقرير
+    showBtn.addEventListener('click', () => {
+      const client = clientSel.value;
+      if (!client) { alert('يرجى اختيار العميل أولاً'); return; }
+
+      const type = reportTypeSel.value || 'all';
+      const clientRoutes = ROUTES[client];
+
+      // إذا ما كان فيه تعريف في ROUTES، استخدم نفس صفحة العميل للكل
+      let target = client;
+      if (clientRoutes && clientRoutes[type]) {
+        target = clientRoutes[type];
+      } else if (clientRoutes && clientRoutes.all) {
+        target = clientRoutes.all;
+      }
+
+      window.location.href = target;
+    });
+  </script>
+
+</body>
+</html>

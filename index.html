@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الصفحة الرئيسية - نظام سنام الأمن</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root { 
+      --bg: #F2E2D2; 
+      --ink: #333333; 
+      --muted: #333333; 
+      --accent: #C19A6B; 
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: 'Tajawal', sans-serif;
+      background: var(--bg) url('background.png') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--ink);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .card {
+      background: rgba(255,255,255,.95);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.08);
+      padding: 40px;
+      max-width: 500px;
+      width: min(92vw, 500px);
+      text-align: center;
+      backdrop-filter: blur(4px);
+    }
+    .logos { display:flex; justify-content:center; gap:20px; margin-bottom:24px; }
+    .logos img { max-height:150px; }
+    h1 { margin:0 0 8px; font-size:24px; color: var(--ink); }
+    p { margin:0 0 24px; color: var(--ink); }
+    .btn {
+      display:block; width:100%; padding:14px 16px; margin:0 0 12px;
+      border:none; border-radius:12px; font-size:16px; font-weight:700;
+      color:#fff; text-decoration:none; text-align:center;
+    }
+    .btn-attendance { background: var(--accent); }
+    .btn-incident { background: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logos">
+      <img src="logo.png" alt="شعار سنام الأمن">
+    </div>
+    <h1>مرحباً بك في نظام سنام الأمن</h1>
+    <p>يرجى اختيار الإجراء:</p>
+    <a href="tahdheer/tahdheer.html" class="btn btn-attendance">تسجيل الحضور والانصراف</a>
+    <a href="report/report.html" class="btn btn-incident">تسجيل الحالة الأمنية</a>
+  </div>
+</body>
+</html>

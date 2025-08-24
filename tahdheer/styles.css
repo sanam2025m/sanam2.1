@@ -1,0 +1,340 @@
+/* ----------------------------------------------------
+   Sanam — Responsive UI (RTL)
+   ---------------------------------------------------- */
+
+/* Load Tajawal with weights actually used (adds 600) */
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800&display=swap');
+
+/* ===================== Theme ===================== */
+:root{
+  --ink:#222831;
+  --ink-muted:#393E46;
+  --accent:#948979;
+  --bg:#DFD0B8;
+  --glass:rgba(255,255,255,.88);
+  --ring:rgba(148,137,121,.35);
+  --divider:rgba(148,137,121,.38);
+}
+
+/* ===================== Reset & Base ===================== */
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+
+body{
+  margin:0;
+  padding:24px;
+  font-family:'Tajawal',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:linear-gradient(180deg,var(--bg),#f3ece2);
+  color:var(--ink);
+  display:grid;            /* center on large screens */
+  place-items:center;
+  direction:rtl;
+}
+
+/* ===================== Container (Card) ===================== */
+.container{
+  width:min(960px,96vw);
+  background:var(--glass);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(0,0,0,.05);
+  border-radius:24px;
+  box-shadow:0 20px 50px rgba(0,0,0,.08);
+  overflow:hidden;
+  margin-inline:auto;      /* robust centering in RTL/LTR */
+}
+
+/* ===================== Header ===================== */
+.header{
+  display:flex;
+  flex-direction:column;   /* badge فوق الشعار */
+  align-items:center;
+  justify-content:center;
+  padding:22px 26px;
+  gap:12px;
+  background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,.65));
+  border-bottom:1px solid rgba(0,0,0,.05);
+}
+
+/* Logo: compact, never oversized */
+.brand{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  text-align:center;
+}
+.brand img{
+  width:auto;
+  height:auto;
+  max-width:clamp(150px,30vw,240px);
+  max-height:clamp(80px,12vw,120px);
+  object-fit:contain;
+  display:block;
+  margin-inline:auto;
+}
+.brand .title{ display:block; }
+.brand .title .main{ font-weight:800; font-size:clamp(18px,2.6vw,28px); }
+.brand .title .sub { font-weight:600; font-size:clamp(12px,1.6vw,14px); color:var(--ink-muted); }
+
+/* Badge */
+.badge{
+  color:#fff;
+  background:var(--accent);
+  padding:8px 14px;
+  border-radius:999px;
+  font-weight:700;
+  font-size:14px;
+  box-shadow:0 6px 16px rgba(148,137,121,.35);
+  white-space:nowrap;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* ===================== Content & Form ===================== */
+.content{ padding:28px; }
+.page-title{ margin:0 0 18px; font-size:clamp(18px,2.2vw,24px); }
+
+.form-grid{
+  display:grid;
+  gap:14px;
+  grid-template-columns:repeat(12,1fr);
+}
+.form-group{
+  grid-column:span 12;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+@media (min-width:720px){
+  .form-group.half{  grid-column:span 6; }
+  .form-group.third{ grid-column:span 4; }
+}
+
+label{ font-weight:700; font-size:14px; }
+
+/* Fields */
+input,select,textarea{
+  appearance:none;
+  width:100%;
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid rgba(0,0,0,.08);
+  background:#fff;
+  color:var(--ink);
+  font-size:15px;
+  line-height:1.35;
+  outline:none;
+  transition:box-shadow .2s ease,border-color .2s ease,transform .02s ease-in;
+}
+textarea{ min-height:110px; resize:vertical; }
+input::placeholder,textarea::placeholder{ color:#9aa0a6; }
+
+input:focus,select:focus,textarea:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 4px var(--ring);
+}
+
+/* Messages */
+.hint{ font-size:12px; color:#666b74; background:rgba(148,137,121,.08); padding:8px 10px; border-radius:10px; }
+.msg{ font-size:12px; margin-top:6px; }
+.msg.error{ color:#b91c1c; background:rgba(185,28,28,.06); border:1px dashed rgba(185,28,28,.25); padding:6px 8px; border-radius:8px; }
+.msg.success{ color:#166534; background:rgba(22,101,52,.06); border:1px dashed rgba(22,101,52,.25); padding:6px 8px; border-radius:8px; }
+
+input.invalid,select.invalid{ border-color:#b91c1c; box-shadow:0 0 0 4px rgba(185,28,28,.15); }
+input.valid,  select.valid  { border-color:#166534; box-shadow:0 0 0 4px rgba(22,101,52,.14); }
+
+/* Buttons */
+.actions{ display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
+.btn{
+  border:1px solid rgba(0,0,0,.06);
+  background:var(--accent);
+  color:#fff;
+  padding:12px 16px;
+  border-radius:14px;
+  font-weight:800;
+  letter-spacing:.2px;
+  cursor:pointer;
+  transition:transform .06s ease,opacity .15s ease,box-shadow .15s ease;
+  box-shadow:0 10px 24px rgba(148,137,121,.28);
+}
+.btn:hover{ opacity:.9; }
+.btn:active{ transform:translateY(1px); opacity:.78; }
+.btn.outline{ background:transparent; color:var(--accent); border-color:var(--accent); }
+.btn.ghost  { background:rgba(148,137,121,.12); color:var(--ink); border:1px dashed rgba(0,0,0,.12); }
+.btn:disabled{ opacity:.45; cursor:not-allowed; pointer-events:none; }
+
+/* ===================== Modal ===================== */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.35); display:none; align-items:center; justify-content:center; z-index:50; }
+.modal{
+  background:var(--glass);
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:18px;
+  padding:18px 18px 12px;
+  width:min(560px,92vw);
+  box-shadow:0 30px 80px rgba(0,0,0,.25);
+}
+.modal header{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  margin-bottom:10px; border-bottom:1px dashed rgba(0,0,0,.1); padding-bottom:8px;
+}
+.modal .close{ background:transparent; border:none; font-size:18px; cursor:pointer; opacity:.7; }
+.modal .close:hover{ opacity:1; }
+
+/* ===================== Inline Panel (Early Checkout) ===================== */
+.inline-panel{
+  margin-top:12px; padding:12px; border-radius:14px;
+  background:rgba(148,137,121,.08); border:1px dashed rgba(148,137,121,.35);
+  display:none;
+}
+.inline-panel .row{ display:flex; flex-direction:column; gap:6px; margin:8px 0; }
+.inline-panel .row .hint{ background:transparent; padding:0; }
+.inline-actions{ display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+
+/* ===================== Accessibility ===================== */
+:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+
+/* =========================================================
+   Mobile (≤600px) — match the “perfect mobile” look
+   ========================================================= */
+@media (max-width:600px){
+  /* Center page vertically like your sample */
+  body{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    padding:10px;
+    background:linear-gradient(to bottom,#f4f1ee,#eae4dc);
+  }
+
+  /* Card: solid white, softer radius/shadow */
+  .container{
+    max-width:550px;
+    width:100%;
+    background:#fff;
+    border:none;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.10);
+    backdrop-filter:none;
+    overflow:visible;
+  }
+
+  /* Header + logo spacing */
+  .header{ padding:18px 18px 10px; gap:10px; border-bottom:2px solid #EBE3DB; }
+  .brand img{ max-height:60px; } /* compact logo like screenshot */
+  .badge{ margin-top:4px; }
+
+  /* Inner content padding */
+  .content{ padding:20px; }
+
+  /* Title style parity */
+  .page-title{
+    text-align:center;
+    color:#3A2D28;
+    font-size:22px;
+    font-weight:700;
+    border-bottom:2px solid #EBE3DB;
+    padding-bottom:12px;
+    margin-bottom:20px;
+  }
+
+  /* One-column form */
+  .form-grid{ grid-template-columns:1fr; gap:12px; }
+  .form-group,
+  .form-group.half,
+  .form-group.third{ grid-column:1 / -1 !important; }
+
+  /* Creamy inputs and soft focus ring */
+  input,select,textarea{
+    padding:14px 16px;
+    border-radius:12px;
+    border:1px solid #D1C7BD;
+    background-color:#F1EDE6;
+    font-size:15px;
+    margin-top:8px;
+  }
+  input:focus,select:focus,textarea:focus{
+    border-color:#AA8374;
+    background-color:#fff;
+    outline:none;
+    box-shadow:0 0 0 3px rgba(203,173,141,.20);
+  }
+
+  label{
+    font-weight:600;
+    color:#3A2D28;
+    font-size:15px;
+    margin-top:6px;
+  }
+
+  /* Buttons stacked, bolder */
+  .actions{ flex-direction:column; gap:10px; margin-top:10px; }
+  .btn{
+    background:#948979;
+    color:#fff;
+    font-weight:700;
+    font-size:17px;
+    border:none;
+    padding:16px;
+    border-radius:12px;
+    width:100%;
+    box-shadow:0 10px 24px rgba(148,137,121,.20);
+  }
+  .btn:hover{ background:#AA8374; }
+
+  /* Smooth reveal anchor */
+  #earlyPanel{ scroll-margin-top:16px; }
+}
+
+/* Helpful on all screens */
+#earlyPanel{ scroll-margin-top:24px; }
+
+/* ===================== Desktop flow (≥601px) ===================== */
+@media (min-width:601px){
+  body{
+    display:block;          /* normal flow */
+    place-items:initial;
+    min-height:100vh;
+    overflow-y:auto;
+  }
+  .container{ overflow:visible; } /* allow expansions on desktop too */
+}
+
+/* Optional: respect reduced motion */
+@media (prefers-reduced-motion:reduce){
+  *{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+  }
+}
+/* === Mobile scrolling fix (≤600px) === */
+@media (max-width: 600px) {
+  /* Use normal flow so the page scrolls freely */
+  body{
+    display: block;              /* was flex */
+    place-items: initial;
+    min-height: 100dvh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px;
+    background: linear-gradient(to bottom, #f4f1ee, #eae4dc);
+  }
+
+  /* Center the card with margins instead of flex-centering the page */
+  .container{
+    margin: 12px auto;           /* centers horizontally */
+  }
+}
+
+
+@media (max-width: 600px) {
+  body.panel-open{
+    display: block !important;
+    align-items: initial !important;
+    justify-content: initial !important;
+  }
+}
+html, body { scroll-behavior: smooth; } /* optional */

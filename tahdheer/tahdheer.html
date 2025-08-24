@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>سنام الأمن — تسجيل الحضور والانصراف</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    window.SANAM_CONFIG = {
+      WEB_APP_URL: "https://script.google.com/macros/s/AKfycbw2UP_bwMIDzoGGzS_ZKYGg5P6tyEtIUeMMmkjlVliEux_ieysatF-vjNfdd7yVSELJ/exec"
+    };
+  </script>
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+      <div class="brand">
+        <img src="logo_s&r.png" alt="شعار سنام الأمن" />
+       
+      </div>
+      <div class="badge">تسجيل الحضور والانصراف</div>
+    </header>
+    <section class="content">
+      <h2 class="page-title">البيانات الأساسية</h2>
+      <form id="attendanceForm" novalidate>
+        <div class="form-grid">
+          <div class="form-group half">
+            <label for="location">الموقع</label>
+            <select id="location" aria-describedby="location-msg" required>
+              <option value="" selected disabled>اختر الموقع</option>
+              <option value="النسيم 1">النسيم 1</option>
+              <option value="النسيم 4">النسيم 4</option>
+              <option value="Amany">A.Amany</option>
+            
+            </select>
+            <div id="location-msg" class="msg" role="status" aria-live="polite"></div>
+          </div>
+
+          <div class="form-group half">
+            <label for="shift">الوردية</label>
+            <select id="shift" aria-describedby="shift-msg" required>
+              <option value="" selected disabled>اختر الوردية</option>
+              <option value="08:00-16:00">08:00ص الى 04:00م</option>
+              <option value="16:00-00:00">04:00م الى 12:00ص</option>
+              <option value="00:00-08:00">12:00ص الى 08:00ص</option>
+            </select>
+            <div id="shift-msg" class="msg" role="status" aria-live="polite"></div>
+          </div>
+
+          <div class="form-group third">
+            <label for="workType">نوع الدوام</label>
+            <select id="workType">
+              <option value="" selected disabled>اختر نوع الدوام</option>
+              <option value="تغطية">تغطية</option>
+              <option value="دوام رسمي">دوام رسمي</option>
+              <option value="إضافي">إضافي</option>
+            </select>
+          </div>
+
+          <div class="form-group third">
+            <label for="fullName">الاسم الرباعي</label>
+            <input id="fullName" type="text" placeholder="اكتب الاسم الرباعي حسب الهوية" aria-describedby="fullName-msg" />
+            <div id="fullName-msg" class="msg" role="status" aria-live="polite"></div>
+          </div>
+
+
+          <div class="form-group third">
+            <label for="nationalId">رقم الهوية</label>
+<input id="nationalId" type="text"
+  placeholder="10 أرقام" maxlength="10"
+  inputmode="numeric" pattern="\d*" dir="ltr"
+  aria-describedby="nationalId-msg" />        
+  <div id="nationalId-msg" class="msg" role="status" aria-live="polite"></div>
+          </div>
+
+          <div class="form-group third">
+            <label for="phone">رقم الجوال</label>
+<input id="phone" type="tel"
+  placeholder="05XXXXXXXX" maxlength="10"
+  inputmode="tel" dir="ltr"
+  aria-describedby="phone-msg" />
+  <div id="phone-msg" class="msg" role="status" aria-live="polite"></div>
+          </div>
+
+          <div class="form-group" style="grid-column:span 12">
+            <label style="font-weight:800">الإجراءات</label>
+            <div class="actions">
+              <button type="button" class="btn" id="btnCheckIn">تسجيل الحضور</button>
+              <button type="button" class="btn outline" id="btnCheckOut">تسجيل الانصراف</button>
+              <button type="button" class="btn ghost" id="btnEarlyCheckout">انصراف مبكر</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="earlyPanel" class="inline-panel" style="grid-column:span 12" aria-hidden="true">
+          <div class="row">
+            <label for="earlyReason">سبب الانصراف المبكر</label>
+            <textarea id="earlyReason" placeholder="اكتب السبب باختصار..." rows="3"></textarea>
+            <div class="hint">السبب مطلوب لتأكيد الانصراف المبكر.</div>
+          </div>
+          <div class="row">
+            <label for="earlyPhoto">صورة (اختياري)</label>
+            <input type="file" id="earlyPhoto" accept="image/*" />
+          </div>
+          <div class="inline-actions">
+            <button type="button" class="btn" id="btnEarlyConfirm">تأكيد الانصراف المبكر</button>
+            <button type="button" class="btn outline" id="btnEarlyCancel">إلغاء</button>
+          </div>
+        </div>
+
+       
+      </form>
+    </section>
+  </main>
+
+  <div id="reminderBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal">
+      <header>
+        <strong>تذكير مهم</strong>
+        <button class="close" id="reminderClose" aria-label="إغلاق">×</button>
+      </header>
+      <div class="body">
+        <p>نذكرك بتسجيل وقت <strong>الانصراف</strong> قبل مغادرتك لضمان اكتمال سجلات الحضور والانصراف.</p>
+        <p>⏱ اهتمامك بالتسجيل يعكس التزامك. شكرًا لتعاونك 🌟</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

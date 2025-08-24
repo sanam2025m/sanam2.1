@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>تقرير سنام الأمن — ملخص الحالات الأمنية</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/halat.css" />
+</head>
+<body>
+  <div class="app">
+    <div class="toolbar screen-only">
+      <button id="printBtn">🖨️ طباعة التقرير PDF</button>
+    </div>
+
+    <div class="content">
+      <section class="card screen-only">
+        <h2>إعداد الغلاف</h2>
+        <div class="cover-config">
+      <label>نص على الغلاف:</label>
+<textarea
+  id="coverText"
+  rows="2"
+  placeholder="تم الإعداد بواسطة …\n(اكتب سطرًا ثانيًا هنا)"
+  style="width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; background:#fdf4e8; font-size:14px; line-height:1.8; resize:vertical;"
+></textarea>
+
+          <small class="muted">لن يظهر هذا الحقل عند الطباعة، بل سيُطبع النص مكانه على صورة الغلاف.</small>
+        </div>
+      </section>
+
+      <section class="card screen-only">
+        <div class="header">
+          <img src="assets/logo_sanam.png" alt="شعار سنام الأمن" style="height: 85px;"  />
+         
+		 <img src="assets/logo_rajhi.png" alt="شعار الراجحي" />
+        </div>
+        <h1>تقرير سنام الامن</h1>
+        <div class="input-grid">
+          <div class="input-line"><label>التاريخ</label><input type="text" id="date" /></div>
+          <div class="input-line"><label>من</label><input type="date" id="from" /></div>
+          <div class="input-line"><label>إلى</label><input type="date" id="to" /></div>
+          <div class="input-line"><label>الموضوع</label><input type="text" id="subject" /></div>
+          <div class="input-line"><label>عدد الصفحات (تقديري)</label><input type="text" id="pages" /></div>
+          <div class="input-line"><label>اسم العميل</label><input type="text" id="company" /></div>
+	<div class="input-line">
+  <label>الموقع</label>
+  <select id="site">
+    <option value="">الكل</option>
+    <option value="النسيم 1">النسيم 1</option>
+    <option value="النسيم 4">النسيم 4</option>
+  </select>
+</div>        
+</div>
+      </section>
+
+     <section class="card screen-only">
+  <h2>نص الخطاب</h2>
+  <p class="muted">استخدم {from} و {to} داخل النص الرئيسي ليتم استبدالهما تلقائيًا عند الطباعة.</p>
+
+  <!-- النص الرئيسي -->
+  <label class="input-line" style="display:block; margin-bottom:8px;">
+    <strong>النص الرئيسي</strong>
+  </label>
+  <textarea id="letterBody"
+    rows="8"
+    style="width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; background:#fdf4e8; font-size:14px; line-height:1.8;"
+  >
+	  
+السلام عليكم ورحمة الله وبركاته، 
+نقدّم لسادتكم هذا التقرير الأمني للفترة من {from} إلى {to}، والمتعلق بتأمين الخدمات الأمنية في موقع {ادخل الموقع}، وفقاً للعقد المبرم مع شركتكم الموقرة.
+يتضمن التقرير ملخصاً للحالة الأمنية، وتقييم الأداء، والملاحظات المسجلة خلال الفترة، إلى جانب التوصيات والإجراءات المقترحة لتعزيز مستوى الأمن والسلامة بالموقع.
+نسعد بالتعاون المستمر معكم، ونعمل دائماً على تقديم أعلى مستويات الكفاءة والجاهزية لخدمة منشأتكم.
+راجين أن ينال هذا التقرير رضاكم، ومستعدون لتقديم أي توضيحات إضافية حال تطلب الأمر.</textarea>
+
+  <!-- سطر الشكر (سطر واحد ومركّز) -->
+  <div class="input-line" style="margin-top:10px;">
+    <label><strong>سطر الشكر (سطر واحد) </strong></label>
+    <input type="text" id="thanksLine"
+      value="تفضلوا بقبول فائق الاحترام والتقدير"
+      style="width:100%; border:1px solid #ddd; background:#fdf4e8; font-size:16px; padding:8px 10px; border-radius:10px; box-sizing:border-box;" />
+  </div>
+
+  <!-- التذييل (يسار مع اتجاه RTL) -->
+  <div class="input-line" style="margin-top:10px;">
+    <label><strong>تذييل الخطاب</strong> <small class="muted">(كل سطر في سطر منفصل)</small></label>
+    <textarea id="footerBlock" rows="3"
+      style="width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; background:#fdf4e8; font-size:14px; line-height:1.8;"
+>
+فريق شركة سنام الأمن
+الإدارة العليا للعمليات الأمنية</textarea>
+  </div>
+</section>
+
+
+      <!-- ملخص الحالات الأمنية -->
+      <section class="card screen-only">
+        <h2>ملخص الحالات الأمنية</h2>
+        <div id="securityCasesPreview">
+          <!-- table injected -->
+        </div>
+      </section>
+
+      <!-- صفحات الطباعة -->
+      <div id="printRoot" class="print-only"></div>
+    </div>
+  </div>
+
+  <script src="assets/halat.js"></script>
+</body>
+</html>

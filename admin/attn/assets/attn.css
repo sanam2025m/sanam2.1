@@ -1,0 +1,153 @@
+:root{
+  --brand:#4d2c12; --ink:#000; --muted:#ccc; --paper:#fff; --field:#fdf4e8;
+  --page-padding:20mm; --rows-per-page:40;
+}
+
+html,body{
+  margin:0; padding:0; height:100%;
+  background:var(--paper); color:var(--ink);
+  font-family:'Cairo',sans-serif;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  -webkit-print-color-adjust:exact; print-color-adjust:exact;
+}
+
+.app{min-height:100vh; display:flex; flex-direction:column;}
+.toolbar{
+  position:sticky; top:0; z-index:1000;
+  display:flex; justify-content:center; gap:12px; padding:12px;
+  background:linear-gradient(to bottom, rgba(0,0,0,.04), rgba(0,0,0,0));
+  backdrop-filter:blur(4px);
+}
+.toolbar button{
+  padding:10px 20px; font-size:16px; background:var(--brand); color:#fff;
+  border:0; border-radius:10px; cursor:pointer;
+}
+
+.content{width:min(1200px,100%); margin:0 auto; padding:16px; box-sizing:border-box;}
+.card{background:#fff; border:1px solid var(--muted); border-radius:14px; box-shadow:0 4px 20px rgba(0,0,0,.04); padding:18px; margin-bottom:16px;}
+.header{display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #eee; padding-bottom:10px; margin-bottom:10px;}
+.header img{height:90px;}
+h1,h2{text-align:center; color:var(--brand); margin:8px 0;}
+.input-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px 16px; align-items:end;}
+.input-line label{font-weight:700; display:block; margin-bottom:4px;}
+
+/* fields */
+input[type="text"],input[type="date"]{
+  width:100%; border:1px solid #ddd; background:var(--field); font-size:16px;
+  padding:8px 10px; border-radius:10px; box-sizing:border-box;
+  transition:all .2s ease-in-out;
+}
+
+/* 🔻 added for dropdown */
+select,
+.site-select{
+  width:100%;
+  border:1px solid #ddd;
+  background:var(--field);
+  font-size:16px;
+  padding:8px 36px 8px 12px; /* room for RTL arrow on the left */
+  border-radius:10px;
+  box-sizing:border-box;
+  font-family:'Cairo',sans-serif;
+  transition:all .2s ease-in-out;
+
+  appearance:none; -webkit-appearance:none; -moz-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='gray'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-size:14px;
+  background-position:left 10px center; /* RTL: arrow on the left */
+  cursor:pointer;
+}
+
+/* hovers/focus */
+input[type="text"]:hover, input[type="date"]:hover,
+select:hover, .site-select:hover{
+  border-color:#b88c5d;
+  background-color:#fff7f0;
+}
+input[type="text"]:focus, input[type="date"]:focus,
+select:focus, .site-select:focus{
+  border-color:var(--brand);
+  background-color:#fff;
+  outline:none;
+  box-shadow:0 0 0 3px rgba(77,44,18,0.15);
+}
+
+.cover-config textarea{
+  width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; background:#fdf4e8;
+  font-size:14px; line-height:1.8; resize:vertical;
+}
+.muted{color:#666;}
+.print-only{display:none;}
+
+table{width:100%; border-collapse:collapse; table-layout:fixed;}
+th,td{border:1px solid #ddd; padding:6px; text-align:center; font-size:12px; word-break:break-word; white-space:pre-wrap;}
+
+/* ===================== الطباعة ===================== */
+@page { size: A4; margin: 0; }
+
+@media print{
+  html, body{
+    margin:0 !important; width:210mm; height:291mm; overflow:visible;
+  }
+
+  thead th{
+    background:#CC9D79 !important; color:#fff !important;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+
+  .toolbar, .card.screen-only, .screen-only{ display:none !important; }
+  .print-only{ display:block !important; }
+
+  .print-page{
+    display:block; position:relative; box-sizing:border-box;
+    width:210mm; height:291mm; margin:0 auto; padding:0; overflow:hidden; background:#fff;
+    break-after:auto; page-break-after:auto;
+  }
+
+  .print-page:nth-child(n+3){ break-before:page; page-break-before:always; }
+
+  .print-page .page-content{
+    padding:var(--page-padding); box-sizing:border-box; width:100%; max-width:100%; overflow-x:hidden;
+  }
+
+  table{ width:100%; border-collapse:collapse; table-layout:fixed; page-break-inside:auto; break-inside:auto; }
+  thead{ display:table-header-group !important; }
+  tfoot{ display:table-footer-group !important; }
+  tbody{ display:table-row-group; }
+  th, td{ font-size:12px; border:1px solid #ccc; page-break-inside:avoid; break-inside:avoid; }
+  img{ max-width:100%; height:auto; }
+
+  .cover-page, .second-page{ position:relative; height:291mm; overflow:hidden; background:none !important; }
+  .cover-page::before{
+    content:""; position:absolute; inset:0; height:calc(100% - 0.2mm); width:calc(100% - 0.2mm);
+    background-color:#fdf4e8; background-image:url('cover-page1.png');
+    background-repeat:no-repeat; background-position:center center; background-size:210mm 288mm; pointer-events:none;
+  }
+  #printRoot > .print-page:nth-child(2){ background-color:#fdf4e8 !important; }
+  #printRoot > .print-page:nth-child(n+3){ background-color:#fdf4e8 !important; }
+  #printRoot > .print-page:nth-child(n+3)::after{
+    content:""; position:absolute; top:10mm; right:var(--page-padding); width:45mm; height:28mm;
+    background:url('logo_sanam.png') no-repeat center / contain;
+  }
+  #printRoot > .print-page:nth-child(n+3) .page-content{ padding-top:calc(var(--page-padding) + 18mm); }
+
+  .table-page .page-content{ padding-bottom:calc(var(--page-padding) + 20mm); }
+  #printRoot > .print-page.table-page .page-content > h2{ margin:var(--page-padding) var(--page-padding) 6mm; }
+
+  /* 👇 الإخفاء الخاص بهذا الجدول فقط (1،7،8،10،11،12) */
+  .attendance-table thead th:nth-child(1),
+  .attendance-table tbody td:nth-child(1),
+  .attendance-table thead th:nth-child(7),
+  .attendance-table tbody td:nth-child(7),
+  .attendance-table thead th:nth-child(8),
+  .attendance-table tbody td:nth-child(8),
+  .attendance-table thead th:nth-child(10),
+  .attendance-table tbody td:nth-child(10),
+  .attendance-table thead th:nth-child(11),
+  .attendance-table tbody td:nth-child(11),
+  .attendance-table thead th:nth-child(12),
+  .attendance-table tbody td:nth-child(12){
+    display:none !important;
+  }
+}
