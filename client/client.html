@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ملخص الحالات الامنية</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+   <!-- External CSS -->
+<link rel="stylesheet" href="assets/style.css" />
+
+</head>
+<body>
+  <div class="wrap">
+<h1>ملخص الحالات الامنية</h1>
+
+<div class="logos-row">
+  <img src="assets/logo_sanam.png" alt="شعار سليمان الراجحي العقارية" class="logos-row__img">
+  <img src="assets/logo_rajhi.png" alt="شعار سنام الأمن" class="logos-row__img">
+</div>
+
+
+    <div class="card">
+      <div class="toolbar">
+        <div class="input">
+          <label for="from">من تاريخ</label>
+          <input type="date" id="from">
+        </div>
+        <div class="input">
+          <label for="to">إلى تاريخ</label>
+          <input type="date" id="to">
+        </div>
+        <div class="input">
+          <label for="site">الموقع</label>
+          <select id="site">
+            <option value="">الكل</option>
+            <!-- تُملأ المواقع ديناميكياً -->
+          </select>
+        </div>
+     <!--   <button class="btn" id="apply">تطبيق الفلاتر</button>  -->
+      </div>
+
+      <p class="meta">الترتيب: <span class="badge">الأحدث أولًا (تنازلي)</span></p>
+
+      <!-- حاويتان منفصلتان: جدول للديسكتوب، كروت للموبايل -->
+      <div id="tableContainer" class="table-wrap"></div>
+      <div id="cardsContainer" class="cards-wrap" style="display:none"></div>
+
+      <p id="count" class="muted"></p>
+    </div>
+  </div>
+
+<!-- External JS -->
+<script src="assets/script.js"></script>
+
+
+</body>
+</html>
