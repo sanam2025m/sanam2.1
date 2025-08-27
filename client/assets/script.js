@@ -1,4 +1,3 @@
-
 /* ===================== الإعدادات ===================== */
 const apiKey = "AIzaSyBYPUAnYE8GC4Vx32cDYSb8UH6YV-VWmEA";
 const CASES_SHEET_ID = "1k6BSYyEGiezQqubRUDbOFiFy8k34OjZO8ZnNbYi751I";
@@ -22,7 +21,7 @@ function parseDateCell(v){
   return m ? new Date(m[0].replace(/-/g,'/')) : null;
 }
 
-/* date-only for cards */
+/* تاريخ فقط للبطاقات */
 function formatDateOnly(v){
   const d = parseDateCell(v);
   if(!d) return (v ?? '-') || '-';
@@ -77,6 +76,53 @@ function convertTimesInText(text){
   });
 }
 
+/* ========= Linkify: URLs & emails become clickable (handles bare domains) ========= */
+function escapeHTML(s){
+  return String(s ?? '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
+function linkifyHTML(text){
+  let s = escapeHTML(text || '');
+
+  // 1) Emails
+  const emailRe = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
+  s = s.replace(emailRe, '<a href="mailto:$1">$1</a>');
+
+  // 2) URLs (http/https or bare domains), skip inside existing anchors
+  const parts = s.split(/(<a[^>]*>.*?<\/a>)/g);
+  const urlRe = /((?:https?:\/\/)?(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s<]*)?)/gi;
+
+  for (let i = 0; i < parts.length; i++){
+    const chunk = parts[i];
+    if (!chunk || /^<a[^>]*>/.test(chunk)) continue;
+
+    parts[i] = chunk.replace(urlRe, (match) => {
+      // Trim trailing punctuation
+      const trailRe = /[.,;:!?)،\]\}»]+$/;
+      let trail = '';
+      if (trailRe.test(match)){
+        trail = match.match(trailRe)[0];
+        match = match.slice(0, -trail.length);
+      }
+      let href = match;
+      if (!/^https?:\/\//i.test(href)) href = 'https://' + href;
+      return `<a href="${href}" target="_blank" rel="noopener">${match}</a>${trail}`;
+    });
+  }
+
+  s = parts.join('');
+
+  // 3) Preserve line breaks (multiple links per cell)
+  s = s.replace(/\r\n|\r|\n/g, '<br>');
+
+  return s;
+}
+
 /* ===================== جدول الديسكتوب (إخفاء عمود الطابع الزمني) ===================== */
 function buildTableHTML(values){
   if(!values || !values.length)
@@ -95,7 +141,8 @@ function buildTableHTML(values){
       padded.slice(1).map((cell)=>{
         let val = (cell==null || String(cell).trim()==='') ? '-' : String(cell).trim();
         val = convertTimesInText(val);
-        return `<td>${val}</td>`;
+        const valHTML = (val === '-') ? '-' : linkifyHTML(val);
+        return `<td>${valHTML}</td>`;
       }).join('')
     }</tr>`;
   }
@@ -142,12 +189,12 @@ function safeCell(row, idx){
   return v ? convertTimesInText(v) : '-';
 }
 
-/* pick a good description for the card, never a timestamp/date */
+/* اختيار أفضل وصف للبطاقة (أبدًا ليس وقت/تاريخ فقط) */
 function getCardDescription(row, headers){
-  // 1) start with detected description column
+  // 1) حاول العمود المكتشف للوصف
   let v = (row?.[DESC_COL] ?? '').toString().trim();
 
-  // if empty or just date/time, try other likely description columns
+  // 2) إن كان فارغًا أو وقت/تاريخ فقط، جرّب أعمدة وصف محتملة
   const descKeywords = [
     'وصفالحاله الامنيه','وصفالحالهالامنيه','وصفالحالةالامنية','وصفالحالة',
     'الوصف','وصف','تفاصيل','تفاصيلالحالة','تفاصيلالبلاغ','الوصفالتفصيلي',
@@ -157,18 +204,17 @@ function getCardDescription(row, headers){
   if (!v || looksLikeDateOrTimeOnly(v)) {
     for (let i=1;i<headers.length;i++){
       if (i===0 || i===DATE_COL || i===SITE_COL) continue;
-      const h = headers[i] || '';
-      const nh = normHeader(h);
+      const nh = normHeader(headers[i] || '');
       if (descKeywords.some(k => nh.includes(normHeader(k)))){
         const cand = (row?.[i] ?? '').toString().trim();
         if (cand && !looksLikeDateOrTimeOnly(cand)) { v = cand; break; }
       }
     }
   }
-  // 2) final fallback: first non-empty, non-date/site cell
+  // 3) احتياط نهائي: أول خلية غير فارغة ليست تاريخ/موقع
   if (!v) {
     for (let i=1;i<headers.length;i++){
-      if (i===0 || i===DATE_COL || i===SITE_COL) continue;
+      if (i===DATE_COL || i===SITE_COL) continue;
       const cand = (row?.[i] ?? '').toString().trim();
       if (cand && !looksLikeDateOrTimeOnly(cand)) { v = cand; break; }
     }
@@ -186,8 +232,9 @@ function buildCardsHTML(values){
   for(let r=1; r<values.length; r++){
     const row = values[r] || [];
     const site = safeCell(row, SITE_COL);
-    const desc = getCardDescription(row, headers);      /* 👈 وصف الحالة الأمنية */
-    const date = formatDateOnly(row[DATE_COL]);         /* 👈 تاريخ فقط */
+    const descRaw = getCardDescription(row, headers);
+    const descHTML = (descRaw === '-') ? '-' : linkifyHTML(convertTimesInText(descRaw));
+    const date = formatDateOnly(row[DATE_COL]);
 
     // تفاصيل: تجاهل عمود 0 (timestamp) + التاريخ + الموقع + الوصف
     let body = '';
@@ -195,9 +242,10 @@ function buildCardsHTML(values){
       if(c===DATE_COL || c===SITE_COL || c===DESC_COL) continue;
       const label = headers[c] || `عمود ${c+1}`;
       const val = safeCell(row, c);
+      const valHTML = (val === '-') ? '-' : linkifyHTML(val);
       body += `
         <div class="kv-label">${label}</div>
-        <div class="kv-value">${val}</div>
+        <div class="kv-value">${valHTML}</div>
       `;
     }
 
@@ -206,7 +254,7 @@ function buildCardsHTML(values){
         <summary>
           <div class="card-title">
             <span class="card-site">${site}</span>
-            <span class="card-desc">${desc}</span>
+            <span class="card-desc">${descHTML}</span>
             <span class="card-date">التاريخ: ${date}</span>
           </div>
           <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -250,16 +298,16 @@ async function loadData(){
   if(rawCases.length){
     const headers = rawCases[0];
 
-    /* اختر التاريخ من عناوين تحتوي (التاريخ|date) وتجنب (timestamp|time|الوقت|الساعة) */
+    /* التاريخ: فضّل (التاريخ|date) وتجنّب (timestamp|time|الوقت|الساعة) */
     DATE_COL = findFirst(headers, ['التاريخ','date'], ['timestamp','time','datetime','الوقت','الساعة']);
     if (DATE_COL === -1) DATE_COL = findFirst(headers, ['timestamp','time','datetime','الوقت','الساعة'], []);
-    if (DATE_COL === -1) DATE_COL = 0; // fallback
+    if (DATE_COL === -1) DATE_COL = 0;
 
     /* الموقع / المركز */
     SITE_COL = findFirst(headers, ['الموقع','site','location','المركز','center','الفرع','branch'], []);
     if (SITE_COL === -1) SITE_COL = 1;
 
-    /* وصف الحالة الأمنية (أولوية قوية) */
+    /* وصف الحالة الأمنية */
     DESC_COL = findFirst(
       headers,
       ['وصف الحالة الأمنية','وصفالحاله الامنيه','وصفالحالهالامنيه','وصفالحالةالامنية','وصفالحالة','وصفالحاله',
@@ -268,7 +316,6 @@ async function loadData(){
       ['التاريخ','date','timestamp','time','الوقت','الساعة','الموقع','site','location','المركز','center','الفرع','branch']
     );
     if (DESC_COL === -1 || DESC_COL === DATE_COL || DESC_COL === SITE_COL || DESC_COL === 0){
-      // first non-date/site column with non-time-ish header
       for (let i=1;i<headers.length;i++){
         if (i===DATE_COL || i===SITE_COL) continue;
         const nh = normHeader(headers[i]||'');
@@ -278,7 +325,7 @@ async function loadData(){
     }
   }
 
-  // Populate site dropdown
+  // تعبئة قائمة المواقع
   const siteSelect = document.getElementById('site');
   if(rawCases.length){
     const sites = uniqueSites(rawCases, SITE_COL);
@@ -313,7 +360,7 @@ function applyFiltersAndRender(){
   if(view.length){
     view = filterByDateRange(view, fromStr, toStr, DATE_COL);
     view = filterBySite(view, siteVal, SITE_COL);
-    view = reverseRows(view);   // show last sheet rows first
+    view = reverseRows(view);   // آخر صف بالشيت يظهر أولاً
   }
 
   render(view);
@@ -325,7 +372,7 @@ function applyFiltersAndRender(){
 
 /* ===================== تهيئة ===================== */
 window.addEventListener('load', async ()=>{
-  // default last 30 days
+  // آخر 30 يوم افتراضيًا
   const to   = new Date();
   const from = new Date(); from.setDate(to.getDate() - 30);
   const fmt = d => d.toISOString().slice(0,10);
@@ -335,15 +382,22 @@ window.addEventListener('load', async ()=>{
   await loadData();
   applyFiltersAndRender();
 
- // document.getElementById('apply').addEventListener('click', applyFiltersAndRender);
+  const applyBtn = document.getElementById('apply');
+  if (applyBtn) applyBtn.addEventListener('click', applyFiltersAndRender);
   document.getElementById('site').addEventListener('change', applyFiltersAndRender);
   document.getElementById('from').addEventListener('change', applyFiltersAndRender);
   document.getElementById('to').addEventListener('change', applyFiltersAndRender);
 });
 
-/* re-render on resize/orientation change (debounced) */
+/* إعادة العرض عند تغيير المقاس/الاتجاه (مع إلغاء الارتداد) */
 let resizeTimer;
 window.addEventListener('resize', ()=>{
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(applyFiltersAndRender, 120);
+});
+
+/* اجعل الروابط داخل <summary> قابلة للنقر بدون تبديل الكارت */
+document.addEventListener('click', (e)=>{
+  const a = e.target.closest('summary a');
+  if(a){ e.stopPropagation(); }
 });
