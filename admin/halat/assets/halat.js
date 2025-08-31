@@ -122,12 +122,19 @@ async function loadAndRender(){
 
   // 2) فلترة موقع (عمود B = index 1، عدّل الرقم لو عمود الموقع مختلف)
   const bySite = filterBySiteFixedColumn(dated, siteVal, 1);
+  // 2.5) ملء قائمة الأسماء حسب البيانات الحالية
+  populateEmployeeFilter(bySite);
+
+  // 2.6) فلترة حسب اسم الموظف (إن اختير)
+  const employeeName = document.getElementById('employeeFilter')?.value || '';
+  const byEmployee = filterByEmployeeName(bySite, employeeName);
+
 
   // 3) العرض
-  document.getElementById('securityCasesPreview').innerHTML = buildTableHTML(bySite, 'cases-table');
+  document.getElementById('securityCasesPreview').innerHTML = buildTableHTML(byEmployee, 'cases-table');
 
   // 4) الطباعة
-  buildPrintPages(bySite);
+  buildPrintPages(byEmployee);
   updatePagesFieldFromDOM();
   syncPrintFields();
 }
@@ -386,3 +393,52 @@ function finalizePrintPages(){
     if (!hasContent) p.remove();
   });
 }
+
+
+/* ===== العثور على عمود الاسم واستخراج الأسماء الفريدة ===== */
+function findNameColumn(headers){
+  const patterns = [/\bالاسم\b/i,/اسم الموظف/i,/الاسم الرباعي/i];
+  for (let i=0;i<headers.length;i++){
+    const h = String(headers[i]||'').trim();
+    if (patterns.some(re => re.test(h))) return i;
+  }
+  return 1;
+}
+function uniqueEmployeeNames(values){
+  if (!values || values.length<2) return [];
+  const headers = values[0];
+  const nameIdx = findNameColumn(headers);
+  const set = new Set();
+  for (let r=1;r<values.length;r++){
+    const name = String((values[r]||[])[nameIdx]||'').trim();
+    if (name) set.add(name);
+  }
+  return Array.from(set).sort((a,b)=>a.localeCompare(b,'ar'));
+}
+function filterByEmployeeName(values, selectedName){
+  if (!selectedName) return values;
+  if (!values || values.length<2) return values;
+  const headers = values[0];
+  const nameIdx = findNameColumn(headers);
+  const result = [headers];
+  for (let r=1;r<values.length;r++){
+    const row = values[r]||[];
+    if (String(row[nameIdx]||'').trim() === selectedName) result.push(row);
+  }
+  return result;
+}
+function populateEmployeeFilter(values){
+  const sel = document.getElementById('employeeFilter');
+  if (!sel) return;
+  const chosen = sel.value;
+  const names = uniqueEmployeeNames(values);
+  sel.innerHTML = '<option value="">الكل</option>' + names.map(n=>`<option value="${n}">${n}</option>`).join('');
+  if (chosen && names.includes(chosen)) sel.value = chosen;
+}
+/* ===== إعادة العرض عند تغيير اختيار اسم الموظف ===== */
+document.addEventListener('change', (e)=>{
+  if (e.target && e.target.id === 'employeeFilter'){
+    try { loadAndRender(); } catch(_) {}
+    try { loadAndRenderCases && loadAndRenderCases(); } catch(_) {}
+  }
+});
