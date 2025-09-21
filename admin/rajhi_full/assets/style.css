@@ -104,7 +104,13 @@ th,td{border:1px solid #ddd; padding:6px; text-align:center; font-size:12px; wor
   }
 
   /* جدول الحضور والانصراف: إخفاء الأعمدة 1 و7 و8 و10 و11 و12 */
-  
+  @media print{
+  .attendance-table thead th:nth-child(1),
+  .attendance-table tbody td:nth-child(1){
+    display: table-cell !important;
+    visibility: visible !important;
+  }
+}
   .attendance-table thead th:nth-child(7),
   .attendance-table tbody td:nth-child(7),
   .attendance-table thead th:nth-child(8),
@@ -225,4 +231,5 @@ th,td{border:1px solid #ddd; padding:6px; text-align:center; font-size:12px; wor
     margin-bottom:6mm;
   }
 }
+
 
