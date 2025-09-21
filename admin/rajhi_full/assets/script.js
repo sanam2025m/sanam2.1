@@ -65,7 +65,7 @@ function convertTimesInText(text){
   return s.replace(re, (full, hh, mm, ss) => {
     if (hasAmPm) return full;
     const h = parseInt(hh,10);
-    const period = (h < 12) ? ;
+    const period = (h < 12) ? 'ص' : 'م';
     let h12 = h % 12; if (h12 === 0) h12 = 12;
     return `${h12}:${mm}${ss ? ':'+ss : ''} ${period}`;
   });
@@ -619,4 +619,5 @@ document.addEventListener('change', (e)=>{
     try { loadAndRenderCases && loadAndRenderCases(); } catch(_) {}
   }
 });
+
 
