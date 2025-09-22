@@ -117,7 +117,7 @@ th,td{border:1px solid #ddd; padding:6px; text-align:center; font-size:12px; wor
   /* أظهِر عمود "نوع الدوام" (غالبًا العمود الثامن في جدول الحضور) */
   .attendance-table thead th:nth-child(8),
   .attendance-table tbody td:nth-child(8){
-    display: table-cell !important;
+   
     visibility: visible !important;
     white-space: nowrap;
   }
@@ -239,6 +239,7 @@ th,td{border:1px solid #ddd; padding:6px; text-align:center; font-size:12px; wor
     margin-bottom:6mm;
   }
 }
+
 
 
 
