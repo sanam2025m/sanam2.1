@@ -122,6 +122,9 @@ th,td{border:1px solid #ddd; padding:6px; text-align:center; font-size:12px; wor
     white-space: nowrap;
   }
 }
+@media print{
+  .attendance-table .state-col{ display:none !important; }
+}
 
   .attendance-table thead th:nth-child(10),
   .attendance-table tbody td:nth-child(10),
@@ -239,6 +242,7 @@ th,td{border:1px solid #ddd; padding:6px; text-align:center; font-size:12px; wor
     margin-bottom:6mm;
   }
 }
+
 
 
 
